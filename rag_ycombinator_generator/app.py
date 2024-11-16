@@ -7,14 +7,14 @@ from fastapi import FastAPI
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
-load_dotenv('.env')
+load_dotenv('../.env')
 
 # Set environment variables (replace with your actual keys or set them in your environment)
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
 os.environ["LANGCHAIN_API_KEY"] = os.environ.get("LANGCHAIN_API_KEY")
 os.environ['OPENAI_API_KEY'] = os.environ.get('OPENAI_API_KEY')
 
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema import Document
@@ -27,7 +27,7 @@ def format_docs(docs):
 
 
 # Load data from CSV
-df = pd.read_csv("./2023-07-13-yc-companies.csv", usecols=['long_description'])
+df = pd.read_csv("database/2023-07-13-yc-companies.csv", usecols=['long_description'])
 df = df.drop_duplicates()
 
 # Fill NaNs and convert to strings
@@ -49,7 +49,6 @@ if not os.path.exists(persist_directory):
         embedding=OpenAIEmbeddings(),
         persist_directory=persist_directory
     )
-    vectorstore.persist()
 else:
     vectorstore = Chroma(
         persist_directory=persist_directory,
